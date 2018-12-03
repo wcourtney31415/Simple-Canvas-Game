@@ -19,8 +19,7 @@ class Main {
 
         //Add game objects
         gameObjectList = new Array<GameObject>();
-        
-
+        gameObjectList.push(new Circle(this.RandomRange(1, this.roomWidth - 1), this.RandomRange(1, this.roomHeight - 1)));
 
         //Perform Create Events
         let index: number = 0;
@@ -36,7 +35,7 @@ class Main {
 
     public static run(): void {
 
-        //Do the Step and Draw Events
+        //Perform Step and Draw Events
         let index: number = 0;
         Main.ctx.clearRect(0, 0, Main.roomWidth, Main.roomHeight);
         while (index < gameObjectList.length) {
@@ -63,4 +62,41 @@ interface GameObject {
     draw(): void;
 }
 
+//Circle class
+class Circle implements GameObject {
+    public x: number;
+    public y: number;
+    public hspeed: number;
+    public vspeed: number;
 
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+
+    create(): void {
+        this.hspeed = 5;
+        this.vspeed = 5;
+    }
+    step(): void {
+        if (this.x + this.hspeed < 0 || this.x + this.hspeed > Main.roomWidth) {
+            this.hspeed *= -1;
+        }
+        else {
+            this.x += this.hspeed;
+        }
+
+        if (this.y + this.vspeed < 0 || this.y + this.vspeed > Main.roomHeight) {
+            this.vspeed *= -1;
+        }
+        else {
+            this.y += this.vspeed;
+        }
+    }
+    draw(): void {
+        Main.ctx.beginPath();
+        Main.ctx.fillStyle = "yellow";
+        Main.ctx.arc(this.x, this.y, 40, 0, 2 * Math.PI);
+        Main.ctx.fill();
+    }
+}
