@@ -13,36 +13,14 @@ class Main {
 
         //Do Game stuff
         let mygame: Game = new Game(canvas);
-
         mygame.add(new Circle(100, 200));
         mygame.add(new Circle(100, 200));
-
         mygame.performStartEvents();
         mygame.startGameLoop();
 
     }
 
-
-    public static run(): void {
-
-        //Perform Step and Draw Events
-        let index: number = 0;
-        Main.ctx.clearRect(0, 0, Main.roomWidth, Main.roomHeight);
-        while (index < gameObjectList.length) {
-            gameObjectList[index].step();
-            gameObjectList[index].draw();
-            index++;
-        }
-    }
-
-
-    public static RandomRange(min: number, max: number): number {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
 }
-
-
 
 //object interface
 interface GameObject {
@@ -74,14 +52,14 @@ class Circle implements GameObject {
         this.vspeed = 5;
     }
     step(): void {
-        if (this.x + this.hspeed < 0 || this.x + this.hspeed > Main.roomWidth) {
+        if (this.x + this.hspeed < 0 || this.x + this.hspeed > this.canvas.width) {
             this.hspeed *= -1;
         }
         else {
             this.x += this.hspeed;
         }
 
-        if (this.y + this.vspeed < 0 || this.y + this.vspeed > Main.roomHeight) {
+        if (this.y + this.vspeed < 0 || this.y + this.vspeed > this.canvas.height) {
             this.vspeed *= -1;
         }
         else {
@@ -102,32 +80,63 @@ class Circle implements GameObject {
 
 class Game {
 
-    private canvas;
+    private canvas: HTMLCanvasElement;
     private objectList: Array<GameObject> = new Array<GameObject>();
+    private ctx: CanvasRenderingContext2D;
+
 
     public constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
+
+        this.ctx = this.canvas.getContext("2d");
+
     }
 
     public add(gameObject: GameObject): void {
+
         gameObject.canvas = this.canvas;
         this.objectList.push(gameObject);
     }
 
     public performStartEvents(): void {
+
         //Perform Create Events
         let index: number = 0;
         while (index < this.objectList.length) {
-            alert(index);
             this.objectList[index].create();
             index++;
         }
     }
 
     public startGameLoop(): void {
+
         //Begin game Loop
         let fps: number = 60;
-        setInterval(Main.run, 1000 / fps);
+
+        setInterval(this.run, 1000 / fps);
+
+    }
+
+    public run(): void {
+
+        //CODE BREAKING//
+        //My hunch here is that something about the way that this "run" method is being called 
+        //in the "setInterval" method is causing the "this.canvas" variable to appear empty.
+        //After more testing it seems this method can't see values of instance variables for this class.
+        //I think setInterval is calling this method in an odd way.
+        alert(this.objectList);
+
+
+
+        //Perform Step and Draw Events
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let index: number = 0;
+        while (index < this.objectList.length) {
+
+            this.objectList[index].step();
+            this.objectList[index].draw();
+            index++;
+        }
     }
 
 }

@@ -16,19 +16,6 @@ var Main = (function () {
         mygame.performStartEvents();
         mygame.startGameLoop();
     };
-    Main.run = function () {
-        //Perform Step and Draw Events
-        var index = 0;
-        Main.ctx.clearRect(0, 0, Main.roomWidth, Main.roomHeight);
-        while (index < gameObjectList.length) {
-            gameObjectList[index].step();
-            gameObjectList[index].draw();
-            index++;
-        }
-    };
-    Main.RandomRange = function (min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
     return Main;
 }());
 //Circle class
@@ -42,13 +29,13 @@ var Circle = (function () {
         this.vspeed = 5;
     };
     Circle.prototype.step = function () {
-        if (this.x + this.hspeed < 0 || this.x + this.hspeed > Main.roomWidth) {
+        if (this.x + this.hspeed < 0 || this.x + this.hspeed > this.canvas.width) {
             this.hspeed *= -1;
         }
         else {
             this.x += this.hspeed;
         }
-        if (this.y + this.vspeed < 0 || this.y + this.vspeed > Main.roomHeight) {
+        if (this.y + this.vspeed < 0 || this.y + this.vspeed > this.canvas.height) {
             this.vspeed *= -1;
         }
         else {
@@ -68,6 +55,7 @@ var Game = (function () {
     function Game(canvas) {
         this.objectList = new Array();
         this.canvas = canvas;
+        this.ctx = this.canvas.getContext("2d");
     }
     Game.prototype.add = function (gameObject) {
         gameObject.canvas = this.canvas;
@@ -77,7 +65,6 @@ var Game = (function () {
         //Perform Create Events
         var index = 0;
         while (index < this.objectList.length) {
-            alert(index);
             this.objectList[index].create();
             index++;
         }
@@ -85,7 +72,23 @@ var Game = (function () {
     Game.prototype.startGameLoop = function () {
         //Begin game Loop
         var fps = 60;
-        setInterval(Main.run, 1000 / fps);
+        setInterval(this.run, 1000 / fps);
+    };
+    Game.prototype.run = function () {
+        //CODE BREAKING//
+        //My hunch here is that something about the way that this "run" method is being called 
+        //in the "setInterval" method is causing the "this.canvas" variable to appear empty.
+        //After more testing it seems this method can't see values of instance variables for this class.
+        //I think setInterval is calling this method in an odd way.
+        alert(this.objectList);
+        //Perform Step and Draw Events
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        var index = 0;
+        while (index < this.objectList.length) {
+            this.objectList[index].step();
+            this.objectList[index].draw();
+            index++;
+        }
     };
     return Game;
 }());
