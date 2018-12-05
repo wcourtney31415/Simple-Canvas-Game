@@ -4,21 +4,17 @@ var Main = (function () {
     }
     Main.main = function () {
         //Generate Canvas
-        this.canvas.width = this.roomWidth;
-        this.canvas.height = this.roomHeight;
-        this.canvas.style.border = "1px solid";
-        document.body.appendChild(this.canvas);
-        //Add game objects
-        gameObjectList = new Array();
-        gameObjectList.push(new Circle(this.RandomRange(1, this.roomWidth - 1), this.RandomRange(1, this.roomHeight - 1)));
-        //Perform Create Events
-        var index = 0;
-        while (index < gameObjectList.length) {
-            gameObjectList[index].create();
-            index++;
-        }
-        var fps = 60;
-        setInterval(this.run, 1000 / fps);
+        var canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        canvas.style.border = "1px solid";
+        document.body.appendChild(canvas);
+        //Do Game stuff
+        var mygame = new Game(canvas);
+        mygame.add(new Circle(100, 200));
+        mygame.add(new Circle(100, 200));
+        mygame.performStartEvents();
+        mygame.startGameLoop();
     };
     Main.run = function () {
         //Perform Step and Draw Events
@@ -33,10 +29,6 @@ var Main = (function () {
     Main.RandomRange = function (min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
-    Main.canvas = document.createElement('canvas');
-    Main.ctx = Main.canvas.getContext("2d");
-    Main.roomWidth = 640;
-    Main.roomHeight = 480;
     return Main;
 }());
 //Circle class
@@ -64,11 +56,37 @@ var Circle = (function () {
         }
     };
     Circle.prototype.draw = function () {
-        Main.ctx.beginPath();
-        Main.ctx.fillStyle = "yellow";
-        Main.ctx.arc(this.x, this.y, 40, 0, 2 * Math.PI);
-        Main.ctx.fill();
+        var ctx = this.canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.fillStyle = "yellow";
+        ctx.arc(this.x, this.y, 40, 0, 2 * Math.PI);
+        ctx.fill();
     };
     return Circle;
+}());
+var Game = (function () {
+    function Game(canvas) {
+        this.objectList = new Array();
+        this.canvas = canvas;
+    }
+    Game.prototype.add = function (gameObject) {
+        gameObject.canvas = this.canvas;
+        this.objectList.push(gameObject);
+    };
+    Game.prototype.performStartEvents = function () {
+        //Perform Create Events
+        var index = 0;
+        while (index < this.objectList.length) {
+            alert(index);
+            this.objectList[index].create();
+            index++;
+        }
+    };
+    Game.prototype.startGameLoop = function () {
+        //Begin game Loop
+        var fps = 60;
+        setInterval(Main.run, 1000 / fps);
+    };
+    return Game;
 }());
 //# sourceMappingURL=app.js.map
