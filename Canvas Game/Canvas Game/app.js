@@ -70,9 +70,10 @@ var Game = (function () {
         }
     };
     Game.prototype.startGameLoop = function () {
+        var _this = this;
         //Begin game Loop
         var fps = 60;
-        setInterval(this.run, 1000 / fps);
+        setInterval(function () { _this.run(); }, 1000 / fps);
     };
     Game.prototype.run = function () {
         //CODE BREAKING//
@@ -80,7 +81,6 @@ var Game = (function () {
         //in the "setInterval" method is causing the "this.canvas" variable to appear empty.
         //After more testing it seems this method can't see values of instance variables for this class.
         //I think setInterval is calling this method in an odd way.
-        alert(this.objectList);
         //Perform Step and Draw Events
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         var index = 0;

@@ -113,7 +113,7 @@ class Game {
         //Begin game Loop
         let fps: number = 60;
 
-        setInterval(this.run, 1000 / fps);
+        setInterval(() => { this.run(); } , 1000 / fps);
 
     }
 
@@ -124,7 +124,7 @@ class Game {
         //in the "setInterval" method is causing the "this.canvas" variable to appear empty.
         //After more testing it seems this method can't see values of instance variables for this class.
         //I think setInterval is calling this method in an odd way.
-        alert(this.objectList);
+        
 
 
 
